@@ -2,12 +2,12 @@ from pathlib import Path##sgregada
 import pandas as pd
 
 class CargueDatos:
-    def __init__(self, carpeta_datos=None):
+    def __init__(self, datos=None):
         """
         Inicializa la clase con la carpeta de datos opcional.
         Si no se proporciona, se pedirá al usuario seleccionar un archivo.
         """
-        self.carpeta_datos = Path(carpeta_datos) if carpeta_datos else None
+        self.carpeta_datos = Path(datos) if datos else None
 
     def listar_archivos(self, extension=".xlsx"):
         """
