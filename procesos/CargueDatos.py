@@ -9,13 +9,14 @@ class CargueDatos:
         """
         self.carpeta_datos = Path(datos) if datos else None
 
-    def listar_archivos(self, extension=".xlsx"):
-        """
-        Lista los archivos con la extensión especificada en la carpeta de datos.
-        """
-        if self.carpeta_datos and self.carpeta_datos.exists():
-            return [archivo for archivo in self.carpeta_datos.iterdir() if archivo.suffix == extension]
-        return []
+    def listar_archivos(self, extension=[".xlsx", ".csv"]):
+       """
+       Lista los archivos con las extensiones especificadas en la carpeta de datos.
+       """
+       if self.carpeta_datos and self.carpeta_datos.exists():
+        return [archivo for archivo in self.carpeta_datos.iterdir() if archivo.suffix in extension]
+       return []
+
 
     def cargar_datos(self, archivo=None):
         """

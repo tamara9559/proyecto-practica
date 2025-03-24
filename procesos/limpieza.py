@@ -1,6 +1,6 @@
 import pandas as pd
 
-class LimpiezaDatos:
+class Limpieza:
     def __init__(self, df):
         """
         Inicializa la clase con un DataFrame de pandas.
@@ -28,25 +28,37 @@ class LimpiezaDatos:
                 break
 
     def validar_tipo_datos(self):
-        """
-        Pregunta al usuario si desea verificar el tipo de datos de cada columna
-        y reporta si hay valores que no coinciden con el tipo esperado.
-        """
-        for columna in self.df.columns:
-            print(f"\nRevisando columna: {columna}")
-            tipo_deseado = input("Ingrese el tipo de dato esperado para esta columna (int, float, str o Enter para omitir): ").strip()
+       """
+       Pregunta al usuario si desea verificar el tipo de datos de cada columna
+       y reporta si hay valores que no coinciden con el tipo esperado.
+       """
+       for columna in self.df.columns:
+        print(f"\nRevisando columna: {columna}")
+        tipo_deseado = input("Ingrese el tipo de dato esperado para esta columna (int, float, str o Enter para omitir): ").strip()
 
-            if tipo_deseado:
-                try:
-                    tipo_deseado = {"int": int, "float": float, "str": str}[tipo_deseado]
-                    valores_erroneos = self.df[columna].dropna().apply(lambda x: not isinstance(x, tipo_deseado))
+        if tipo_deseado:
+            try:
+                tipo_deseado = {"int": int, "float": float, "str": str}[tipo_deseado]
+                
+                # Intentar convertir valores y detectar errores
+                errores = self.df[columna].dropna().apply(lambda x: self.intentar_convertir(x, tipo_deseado))
+                valores_erroneos = errores[errores == False].index.tolist()
 
-                    if valores_erroneos.any():
-                        print(f"⚠️ Hay {valores_erroneos.sum()} valores en '{columna}' que no son {tipo_deseado.__name__}.")
-                    else:
-                        print(f"✅ Todos los valores en '{columna}' cumplen con el tipo {tipo_deseado.__name__}.")
-                except KeyError:
-                    print("Tipo de dato no válido. Omitiendo validación.")
+                if valores_erroneos:
+                    print(f"⚠️ Valores incorrectos en '{columna}': Filas {valores_erroneos}")
+                else:
+                    print(f"✅ Todos los valores en '{columna}' cumplen con el tipo {tipo_deseado.__name__}.")
+            except KeyError:
+                print("Tipo de dato no válido. Omitiendo validación.")
+
+    @staticmethod
+    def intentar_convertir(valor, tipo):
+     try:
+        tipo(valor)
+        return True
+     except (ValueError, TypeError):
+        return False
+
 
     def ejecutar_limpeza(self):
         """
