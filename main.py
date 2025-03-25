@@ -30,13 +30,18 @@ def main():
     print("Valores nulos por columna:\n", nulos)
     print(f"Total de valores nulos en la tabla: {total_nulos}")
 
+    print("\n📊 Estadísticas Descriptivas:")
+    estadisticas = analisis.estadisticas_descriptivas()
+    for columna, valores in estadisticas.items():
+        print(f"\n🔹 {columna}:")
+        for clave, valor in valores.items():
+            print(f"  {clave}: {valor}")
+
     # 4️⃣ Visualización de datos
     visualizador = VisualizacionDatos(df)
     visualizador.graficar_valores_nulos()
-    visualizador.graficar_histogramas()
-    visualizador.graficar_boxplots()
-    visualizador.graficar_matriz_correlacion()
-    visualizador.graficar_valores_categoricos()
+    visualizador.graficar_estadisticas_numericas()
+    visualizador.graficar_frecuencia_categorias()
 
     print("\n✅ Análisis y visualización completados.")
 

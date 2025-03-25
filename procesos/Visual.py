@@ -1,6 +1,8 @@
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+import re
+
 
 class VisualizacionDatos:
     def __init__(self, df):
@@ -9,63 +11,56 @@ class VisualizacionDatos:
         os.makedirs(self.carpeta_resultados, exist_ok=True)
 
     def guardar_grafica(self, nombre_archivo):
-        """Guarda la gráfica en la carpeta 'resultados'."""
+        """Guarda la gráfica en la carpeta 'resultados', asegurando que el nombre del archivo sea válido."""
+        nombre_archivo = re.sub(r'[<>:"/\\|?*\n]+', '_', nombre_archivo)  # Reemplaza caracteres inválidos
         ruta_completa = os.path.join(self.carpeta_resultados, nombre_archivo)
         plt.savefig(ruta_completa)
         print(f"✅ Gráfica guardada en: {ruta_completa}")
         plt.close()
 
     def graficar_valores_nulos(self):
-        """Muestra y guarda un mapa de calor con los valores nulos."""
+        """Muestra y guarda un gráfico de barras con los valores nulos."""
+        nulos_por_columna = self.df.isnull().sum()
         plt.figure(figsize=(10, 5))
-        sns.heatmap(self.df.isnull(), cmap='viridis', cbar=False)
-        plt.title('Mapa de valores nulos')
-        self.guardar_grafica("valores_nulos.png")
+        nulos_por_columna.plot(kind='bar', color='red', alpha=0.7)
+        plt.title('Valores nulos por columna')
+        plt.xlabel('Columnas')
+        plt.ylabel('Cantidad de valores nulos')
+        self.guardar_grafica("valores_nulos_barras.png")
 
-    def graficar_histogramas(self):
-        """Muestra y guarda histogramas para variables numéricas."""
-        self.df.hist(figsize=(12, 8), bins=20, edgecolor='black')
-        plt.suptitle('Distribución de variables numéricas')
-        self.guardar_grafica("histogramas.png")
-
-    def graficar_boxplots(self):
-        """Muestra y guarda boxplots de variables numéricas."""
-        plt.figure(figsize=(12, 6))
-        sns.boxplot(data=self.df)
-        plt.xticks(rotation=90)
-        plt.title('Boxplot de variables numéricas')
-        self.guardar_grafica("boxplots.png")
-
-    def graficar_matriz_correlacion(self):
-        """Muestra y guarda la matriz de correlación para variables numéricas."""
+    def graficar_estadisticas_numericas(self):
+        """Genera gráficos de línea para variables numéricas con media, mediana, moda y varianza."""
         df_numerico = self.df.select_dtypes(include=['number'])
+        
         if df_numerico.empty:
-            print("⚠️ No hay datos numéricos para calcular la correlación.")
+            print("⚠️ No hay datos numéricos para graficar.")
             return
+        
+        for columna in df_numerico.columns:
+            plt.figure(figsize=(10, 5))
+            plt.plot(df_numerico[columna], label="Valores", color="blue")
+            plt.axhline(df_numerico[columna].mean(), color="red", linestyle="--", label="Media")
+            plt.axhline(df_numerico[columna].median(), color="green", linestyle="--", label="Mediana")
+            
+            moda = df_numerico[columna].mode().iloc[0] if not df_numerico[columna].mode().empty else None
+            if moda:
+                plt.axhline(moda, color="purple", linestyle="--", label="Moda")
+            
+            plt.title(f"Distribución de {columna}")
+            plt.legend()
+            self.guardar_grafica(f"{columna}_estadisticas.png")
 
-        plt.figure(figsize=(10, 8))
-        matriz_corr = df_numerico.corr().fillna(0)
-        sns.heatmap(matriz_corr, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
-        plt.title('Matriz de correlación')
-        self.guardar_grafica("matriz_correlacion.png")
-
-    def graficar_valores_categoricos(self):
-        """Muestra y guarda gráficos de barras para variables categóricas con menos de 10 categorías únicas."""
-        cat_cols = [col for col in self.df.select_dtypes(include=['object']).columns if self.df[col].nunique() < 10]
-        if not cat_cols:
-            print("No hay variables categóricas con pocas categorías únicas para graficar.")
-            return
-
-        fig, axes = plt.subplots(len(cat_cols), 1, figsize=(10, 5 * len(cat_cols)))
-        if len(cat_cols) == 1:
-            axes = [axes]
-
-        for ax, col in zip(axes, cat_cols):
-            sns.countplot(x=self.df[col], ax=ax, palette="viridis")
-            ax.set_title(f'Frecuencia de categorías en {col}')
-            ax.set_ylabel('Frecuencia')
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-
-        plt.tight_layout()
-        self.guardar_grafica("valores_categoricos.png")
+    def graficar_frecuencia_categorias(self):
+        """Genera gráficos de pastel para las 5 palabras más repetidas en variables categóricas."""
+        df_categorico = self.df.select_dtypes(include=['object'])
+        
+        for columna in df_categorico.columns:
+            top_5 = df_categorico[columna].value_counts().head(5)
+            if top_5.empty:
+                continue
+            
+            plt.figure(figsize=(8, 8))
+            top_5.plot(kind='pie', autopct='%1.1f%%', colors=sns.color_palette("pastel"))
+            plt.title(f"Top 5 valores más repetidos en {columna}")
+            self.guardar_grafica(f"{columna}_top5_pastel.png")
   
