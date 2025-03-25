@@ -1,0 +1,6 @@
+falta documentacion
+ver que hacer el archivo que se creo en procesos
+comentarios en el codigo
+como se representan los datos en el termianl
+las tablas que nos muestren
+incluir todas las importaciones en el documentacion

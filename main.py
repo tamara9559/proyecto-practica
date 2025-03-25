@@ -4,6 +4,9 @@ from procesos.Limpieza import Limpieza
 from procesos.Analisis import AnalisisDatos
 from procesos.Visual import VisualizacionDatos
 
+import sys
+sys.dont_write_bytecode = True
+
 def main():
     print("📊 Cargador de Datos")
 
@@ -22,21 +25,10 @@ def main():
     # 3️⃣ Analizar los datos
     analisis = AnalisisDatos(df)
 
-    print("\n🔍 Resumen Estadístico:")
-    print(analisis.resumen_estadistico())
-
     print("\n❌ Valores Nulos:")
-    nulos, ubicaciones = analisis.valores_nulos()
-    print(nulos)
-    print("Ubicación de valores nulos:", ubicaciones)
-
-    print("\n📌 Filas duplicadas:", analisis.detectar_duplicados())
-
-    print("\n📈 Medidas de Tendencia Central:")
-    print(analisis.medidas_tendencia_central())
-
-    print("\n📊 Medidas de Dispersión:")
-    print(analisis.medidas_dispersion())
+    nulos, total_nulos = analisis.valores_nulos()
+    print("Valores nulos por columna:\n", nulos)
+    print(f"Total de valores nulos en la tabla: {total_nulos}")
 
     # 4️⃣ Visualización de datos
     visualizador = VisualizacionDatos(df)
