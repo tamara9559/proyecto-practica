@@ -1,9 +1,16 @@
 import pandas as pd
 
 class Limpieza:
+    """
+    Clase para realizar tareas de limpieza en un DataFrame de pandas.
+    Permite eliminar columnas sensibles y validar tipos de datos.
+    """
+    
     def __init__(self, df):
         """
-        Inicializa la clase con un DataFrame de pandas.
+        Inicializa la clase con un DataFrame.
+        
+        :param df: DataFrame de pandas a limpiar.
         """
         self.df = df
 
@@ -28,41 +35,51 @@ class Limpieza:
                 break
 
     def validar_tipo_datos(self):
-       """
-       Pregunta al usuario si desea verificar el tipo de datos de cada columna
-       y reporta si hay valores que no coinciden con el tipo esperado.
-       """
-       for columna in self.df.columns:
-        print(f"\nRevisando columna: {columna}")
-        tipo_deseado = input("Ingrese el tipo de dato esperado para esta columna (int, float, str o Enter para omitir): ").strip()
+        """
+        Pregunta al usuario si desea verificar el tipo de datos de cada columna
+        y reporta si hay valores que no coinciden con el tipo esperado.
+        """
+        for columna in self.df.columns:
+            print(f"\nRevisando columna: {columna}")
+            tipo_deseado = input("Ingrese el tipo de dato esperado para esta columna (int, float, str o Enter para omitir): ").strip()
 
-        if tipo_deseado:
-            try:
-                tipo_deseado = {"int": int, "float": float, "str": str}[tipo_deseado]
-                
-                # Intentar convertir valores y detectar errores
-                errores = self.df[columna].dropna().apply(lambda x: self.intentar_convertir(x, tipo_deseado))
-                valores_erroneos = errores[errores == False].index.tolist()
+            if tipo_deseado:
+                try:
+                    tipo_deseado = {"int": int, "float": float, "str": str}[tipo_deseado]
+                    
+                    # Intentar convertir valores y detectar errores
+                    errores = self.df[columna].dropna().apply(lambda x: self.intentar_convertir(x, tipo_deseado))
+                    valores_erroneos = errores[errores == False].index.tolist()
 
-                if valores_erroneos:
-                    print(f"⚠️ Valores incorrectos en '{columna}': Filas {valores_erroneos}")
-                else:
-                    print(f"✅ Todos los valores en '{columna}' cumplen con el tipo {tipo_deseado.__name__}.")
-            except KeyError:
-                print("Tipo de dato no válido. Omitiendo validación.")
+                    if valores_erroneos:
+                        print(f"⚠️ Valores incorrectos en '{columna}': Filas {valores_erroneos}")
+                    else:
+                        print(f"✅ Todos los valores en '{columna}' cumplen con el tipo {tipo_deseado.__name__}.")
+                except KeyError:
+                    print("Tipo de dato no válido. Omitiendo validación.")
 
     @staticmethod
     def intentar_convertir(valor, tipo):
-     try:
-        tipo(valor)
-        return True
-     except (ValueError, TypeError):
-        return False
-
+        """
+        Intenta convertir un valor a un tipo específico.
+        
+        :param valor: Valor a convertir.
+        :param tipo: Tipo de dato al que se quiere convertir (int, float, str).
+        :return: True si la conversión es exitosa, False si no lo es.
+        """
+        try:
+            tipo(valor)
+            return True
+        except (ValueError, TypeError):
+            return False
 
     def ejecutar_limpeza(self):
         """
-        Ejecuta el proceso de limpieza: elimina columnas sensibles y valida tipos de datos.
+        Ejecuta el proceso de limpieza:
+        1. Elimina columnas sensibles.
+        2. Valida tipos de datos.
+        
+        :return: DataFrame limpio.
         """
         self.eliminar_columnas_sensibles()
         self.validar_tipo_datos()

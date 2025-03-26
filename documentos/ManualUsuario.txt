@@ -1,0 +1,40 @@
+Manual de Usuario
+
+Introducción
+
+Este manual proporciona instrucciones detalladas sobre el uso del sistema de análisis de datos. La aplicación permite cargar, limpiar, analizar y visualizar datos de manera sencilla.
+
+Requisitos Previos
+-Python 3 instalado
+-Librerías necesarias (instalar con pip install -r documentos/requirements.txt)
+-Datos en formato .csv o .xlsx
+
+Estructura del Proyecto
+
+El proyecto está organizado en las siguientes carpetas:
+
+datos/: Archivos de datos que se van a analizar.
+procesos/: Scripts Python que ejecutan la carga, limpieza, análisis y visualización de datos.
+documentos/: Documentación del proyecto, incluyendo requirements.txt
+resultados/: Imágenes generadas a partir del análisis de datos.
+
+Uso de la Aplicación
+
+1. Ejecución del Programa
+Para iniciar el sistema, abre una terminal en la carpeta principal y ejecuta:
+python main.py
+2. Carga de Datos
+Se solicitará un archivo .csv o .xlsx.
+Si el archivo es válido, se cargará en el sistema.
+3. Limpieza de Datos
+Se eliminarán automáticamente columnas sensibles como "cedula" y "direccion".
+Se permitirá eliminar otras columnas manualmente.
+Se validarán los tipos de datos en cada columna.
+4. Análisis de Datos
+Se mostrará un resumen de valores nulos por columna.
+Se calcularán estadísticas descriptivas (media, mediana, moda, varianza, etc.).
+5. Visualización de Datos
+Se generarán gráficas que se guardarán en la carpeta resultados/:
+Gráfico de valores nulos
+Distribución de variables numéricas
+Frecuencia de valores categóricos
